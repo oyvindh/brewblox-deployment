@@ -3,29 +3,56 @@ version: '3'
 services:
   eventbus:
     image: rabbitmq:alpine
-    network_mode: host
     ports:
-      - "5672:5672"
+      - "5672"
+    environment:
+      - SERVICE_5672_NAME=eventbus
 
   influx:
     image: influxdb:alpine
-    network_mode: host
     ports:
-      - "8086:8086"
-
-  gateway:
-    image: quay.io/hellofresh/janus
-    network_mode: host
-    ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "8086"
+    environment:
+      - SERVICE_8086_NAME=influx
 
   history:
     build: ../images/brewblox-history
-    network_mode: host
     ports:
-      - "5000:5000"
+      - "5000"
+    environment:
+      # For HAProxy: these TCP ports should be forwarded to
+      - TCP_PORTS="5000"
+      # For HAProxy: only proxy requests matching this url
+      - VIRTUAL_HOST=*/history/*
+      # For Registrator: service name for port 5000
+      - SERVICE_5000_NAME=history
+      # For brewblox-history image: service name
+      - BREWBLOX_NAME=history
+
+  consul:
+    image: gliderlabs/consul-server
+    ports:
+      - "8500:8500"
+    command:
+      # There is only one consul server
+      - -bootstrap-expect=1
+
+  registrator:
+    image: gliderlabs/registrator
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
     depends_on:
-      - gateway
-      - influx
-      - eventbus
+      - consul
+    command:
+      - consul://consul:8500
+
+  gateway:
+    image: dockercloud/haproxy
+    links:
+      - history
+    ports:
+      - "80:80"
+      # stats port
+      - "1936:1936"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
