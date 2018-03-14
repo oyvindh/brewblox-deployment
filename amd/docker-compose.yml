@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  eventbus:
+    image: rabbitmq:alpine
+
+  influx:
+    image: influxdb:alpine
+
+  simulator:
+    image: brewblox/brewblox-service:latest
+    depends_on:
+      - eventbus
+    labels:
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /simulator"
+
+  history:
+    image: brewblox/brewblox-history:latest
+    depends_on:
+      - influx
+      - eventbus
+    labels:
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /history"
+    # volumes:
+      # Uncomment this to use host machine packages instead of PyPi
+      # - ~/.local/lib/python3.6/site-packages:/usr/local/lib/python3.6/site-packages
+
+  traefik:
+    image: traefik
+    command: -c /dev/null --api --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
