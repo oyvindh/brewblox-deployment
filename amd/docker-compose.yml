@@ -27,6 +27,15 @@ services:
       # Uncomment this to use host machine packages instead of PyPi
       # - ~/.local/lib/python3.6/site-packages:/usr/local/lib/python3.6/site-packages
 
+  spark:
+    image: brewblox/brewblox-devcon-spark:latest
+    privileged: true
+    depends_on:
+      - eventbus
+    labels:
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /spark"
+
   traefik:
     image: traefik
     command: -c /dev/null --api --docker --docker.domain=docker.localhost --logLevel=DEBUG

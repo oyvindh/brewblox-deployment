@@ -15,6 +15,15 @@ services:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /simulator"
 
+  spark:
+    image: brewblox/brewblox-devcon-spark:rpi-latest
+    privileged: true
+    depends_on:
+      - eventbus
+    labels:
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /spark"
+
   history:
     image: brewblox/brewblox-history:rpi-latest
     depends_on:
