@@ -2,13 +2,16 @@ version: '3'
 
 services:
   eventbus:
-    image: rabbitmq:alpine
+    image: rabbitmq:management
+    ports:
+      # Allow external status checks
+      - "15672:15672"
 
   influx:
     image: influxdb:alpine
-    labels:
-      - "traefik.port=8086"
-      - "traefik.frontend.rule=PathPrefix: /influx"
+    ports:
+      # Allow external status checks
+      - "8086:8086"
 
   history:
     image: brewblox/brewblox-history:develop
