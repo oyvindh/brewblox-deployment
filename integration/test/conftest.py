@@ -57,12 +57,12 @@ def compose(services, log_enabled):
 @pytest.fixture(scope='session')
 async def session(event_loop, services, host):
 
-    # Helper function: repeats heartbeat requests until the response is ok
-    async def wait_online(session, service):
+    # Helper function: make http calls to heartbeat / ping endpoints until they're ok
+    async def wait_online(session, addr):
         while True:
             try:
-                res = await session.get(host + f'/{service}/_service/status')
-                assert res.status == 200
+                res = await session.get(addr)
+                assert res.status < 400
                 break
             except Exception:
                 await asyncio.sleep(0.1)
@@ -70,7 +70,13 @@ async def session(event_loop, services, host):
     # Create session. This will be used for all tests
     async with aiohttp.ClientSession(raise_for_status=True) as session:
         async with timeout(15):
-            await asyncio.wait([wait_online(session, svc) for svc in services])
+            await asyncio.wait(
+                [wait_online(session, f'{host}/{svc}/_service/status') for svc in services]
+                +
+                [
+                    wait_online(session, host + ':15672/'),  # eventbus management port
+                    wait_online(session, host + ':8086/ping'),  # influxdb status check
+                ]
+            )
 
-        await asyncio.sleep(5)  # Sleep to give eventbus, influx, etc time to fully start up
         yield session
