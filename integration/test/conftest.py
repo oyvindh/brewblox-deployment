@@ -4,7 +4,6 @@ import logging
 import aiohttp
 import pytest
 from async_timeout import timeout
-from itertools import chain
 
 from subprocess import call, STDOUT
 
@@ -72,13 +71,12 @@ async def session(event_loop, services, host):
     async with aiohttp.ClientSession(raise_for_status=True) as session:
         async with timeout(15):
             await asyncio.wait(
-                chain(
-                    [wait_online(session, f'{host}/{svc}/_service/status') for svc in services],
-                    [
-                        wait_online(session, host + ':15672/'),  # eventbus management port
-                        wait_online(session, host + ':8086/ping'),  # influxdb status check
-                    ]
-                )
+                [wait_online(session, f'{host}/{svc}/_service/status') for svc in services]
+                +
+                [
+                    wait_online(session, host + ':15672/'),  # eventbus management port
+                    wait_online(session, host + ':8086/ping'),  # influxdb status check
+                ]
             )
 
         yield session
