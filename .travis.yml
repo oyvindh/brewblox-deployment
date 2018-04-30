@@ -1,0 +1,9 @@
+sudo: required
+language: python
+python: '3.6'
+services:
+  - docker
+
+install: pip install tox
+
+script: cd integration && tox && cat logs/*

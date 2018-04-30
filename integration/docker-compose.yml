@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  eventbus:
+    image: rabbitmq:alpine
+
+  influx:
+    image: influxdb:alpine
+    labels:
+      - "traefik.port=8086"
+      - "traefik.frontend.rule=PathPrefix: /influx"
+
+  history:
+    image: brewblox/brewblox-history:temp
+    depends_on:
+      - influx
+      - eventbus
+    labels:
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /history"
+
+  publisher:
+    image: brewblox/brewblox-service:bugfix-integration-fixes
+    depends_on:
+      - eventbus
+    labels:
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /publisher"
+    command:
+      - "--name=publisher"
+
+  traefik:
+    image: traefik
+    command: -c /dev/null --api --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
