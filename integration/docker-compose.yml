@@ -11,7 +11,7 @@ services:
       - "traefik.frontend.rule=PathPrefix: /influx"
 
   history:
-    image: brewblox/brewblox-history:bugfix-integration-fixes
+    image: brewblox/brewblox-history:develop
     depends_on:
       - influx
       - eventbus
@@ -20,7 +20,7 @@ services:
       - "traefik.frontend.rule=PathPrefix: /history"
 
   publisher:
-    image: brewblox/brewblox-service:bugfix-integration-fixes
+    image: brewblox/brewblox-service:develop
     depends_on:
       - eventbus
     labels:
