@@ -30,15 +30,15 @@ async def test_publish_values(session, host, data):
 
     await asyncio.sleep(2)
 
-    await session.post(host + '/history/query',
+    await session.post(host + '/history/_debug/query',
                        json={'database': 'brewblox', 'query': 'SHOW DATABASES'})
 
-    res = await session.post(host + '/history/query',
+    res = await session.post(host + '/history/_debug/query',
                              json={'database': 'brewblox', 'query': 'SHOW MEASUREMENTS'})
     content = Nesdict(await res.json())
     assert content.get('results/0/series')
 
-    res = await session.post(host + '/history/query',
+    res = await session.post(host + '/history/_debug/query',
                              json={'database': 'brewblox', 'query': 'SELECT * FROM controller1 LIMIT 100'})
 
     content = Nesdict(await res.json())
