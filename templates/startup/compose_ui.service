@@ -1,0 +1,13 @@
+[Unit]
+Description=Compose UI service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/startup
+ExecStart=/bin/bash ./startup.sh
+
+[Install]
+WantedBy=multi-user.target

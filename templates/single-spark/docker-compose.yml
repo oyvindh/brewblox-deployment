@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+
+  eventbus:
+    image: rabbitmq:latest
+
+  influx:
+    image: hypriot/rpi-influxdb:latest
+    volumes:
+    - "./influxdb:/var/lib/influxdb"
+
+  history:
+    image: brewblox/brewblox-history:rpi-latest
+    depends_on:
+      - influx
+      - eventbus
+    labels:
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /history"
+
+  spark:
+    image: brewblox/brewblox-devcon-spark:rpi-latest
+    privileged: true
+    depends_on:
+      - eventbus
+    labels:
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /spark"
+    volumes:
+      - ./brewblox_db.json:/app/brewblox_db.json
+    command:
+      - "--database=/app/brewblox_db.json"
+      - "--unit-system-file=config/celsius_system.txt"
+
+  traefik:
+    image: traefik
+    command: -c /dev/null --api --docker --docker.domain=docker.localhost
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
