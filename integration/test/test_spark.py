@@ -2,6 +2,7 @@
 Tests the brewblox-devcon-spark service
 """
 
+import asyncio
 
 import pytest
 from aiohttp.client_exceptions import ClientResponseError
@@ -112,3 +113,21 @@ async def test_write_system(session, host):
     print(retd)
 
     assert 'cc' in retd['data']['address']
+
+
+@pytest.mark.asyncio
+async def test_broadcast(session, host):
+    # Sleep to ensure broadcaster has sent something
+    await asyncio.sleep(2)
+
+    retv = await session.post(host + '/history/query/objects', json={})
+    retd = await retv.json()
+    print(retd)
+    assert 'sensey/settings/offset[delta_degC]' in retd['spark']
+
+    retv = await session.post(host + '/history/query/values', json={
+        'measurement': 'spark'
+    })
+    retd = await retv.json()
+    print(retd)
+    assert 'sensey/settings/offset[delta_degC]' in retd['columns']
