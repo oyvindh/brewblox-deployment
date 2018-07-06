@@ -8,7 +8,7 @@ services:
   influx:
     image: hypriot/rpi-influxdb:latest
     volumes:
-    - "./influxdb:/var/lib/influxdb"
+    - "./influxdb/:/var/lib/influxdb/"
 
   history:
     image: brewblox/brewblox-history:rpi-latest
@@ -18,9 +18,13 @@ services:
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /history"
+    volumes:
+      - ./logs/:/app/logs/
+    command:
+      - "--output=/app/logs/history.txt"
 
   spark:
-    image: brewblox/brewblox-devcon-spark:rpi-latest
+    image: brewblox/brewblox-devcon-spark:rpi-develop
     privileged: true
     depends_on:
       - eventbus
@@ -28,10 +32,12 @@ services:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /spark"
     volumes:
-      - ./brewblox_db.json:/app/brewblox_db.json
+      - ./logs/:/app/logs/
+      - ./brewblox/:/app/brewblox/
     command:
-      - "--database=/app/brewblox_db.json"
-      - "--unit-system-file=config/celsius_system.txt"
+      - "--output=/app/logs/history.txt"
+      - "--database=/app/brewblox/brewblox_db.json"
+      - "--unit-system-file=/app/config/celsius_system.txt"
 
   traefik:
     image: traefik

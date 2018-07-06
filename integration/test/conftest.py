@@ -1,11 +1,10 @@
 import asyncio
 import logging
+from subprocess import STDOUT, call
 
 import aiohttp
 import pytest
 from async_timeout import timeout
-
-from subprocess import call, STDOUT
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -32,7 +31,8 @@ def host():
 def services():
     return [
         'history',
-        'publisher'
+        'publisher',
+        'spark',
     ]
 
 
