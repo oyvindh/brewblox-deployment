@@ -32,8 +32,16 @@ services:
     command:
       - "--name=publisher"
 
+  sparksimulator:
+    image: brewblox/firmware-simulator
+    volumes:
+        - "/etc/timezone:/etc/timezone:ro"
+        - "/etc/localtime:/etc/localtime:ro"
+    ports:
+        - "8332"
+
   spark:
-    image: brewblox/brewblox-devcon-spark:develop
+    image: brewblox/brewblox-devcon-spark:feature-obj-type-string
     privileged: true
     depends_on:
       - eventbus
@@ -41,9 +49,10 @@ services:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /spark"
     command:
-      - "--simulation"
       - "--broadcast-interval=1"
       - "--unit-system-file=/app/config/celsius_system.txt"
+      - "--device-url=sparksimulator"
+      - "--device-url-port=8332"
 
   traefik:
     image: traefik
