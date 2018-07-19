@@ -1,7 +1,6 @@
 FROM python:3.6
 
-ENV SPARK_ADDRESS=localhost
-ENV SPARK_PORT=5000
+ENV TEST_HOST=127.0.0.1
 
 COPY . /app
 WORKDIR /app
