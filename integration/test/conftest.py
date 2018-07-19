@@ -37,24 +37,6 @@ def services():
     ]
 
 
-# @pytest.fixture(scope='session', autouse=True)
-# def compose(services, log_enabled):
-
-#     try:
-#         call('docker-compose up --force-recreate --no-color --remove-orphans -d'.split())
-#         yield
-#     finally:
-#         # Sequentially logs from all brewblox services to file
-#         for svc in services:
-#             with open(f'logs/{svc}_service_log.txt', 'w') as f:
-#                 call(f'docker-compose logs --no-color {svc}'.split(), stdout=f, stderr=STDOUT)
-
-#         with open('logs/compose_ps_log.txt', 'w') as f:
-#             call('docker-compose ps'.split(), stdout=f, stderr=STDOUT)
-
-#         call('docker-compose down'.split())
-
-
 @pytest.fixture(scope='session')
 async def session(event_loop, services, host):
 
