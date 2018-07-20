@@ -16,10 +16,12 @@ pytest-asyncio = "*"
 dpath = "*"
 nesdict = "*"
 pprint = "*"
+docker-compose = "*"
 
 
 [dev-packages]
 
+"autopep8" = "*"
 
 
 [requires]

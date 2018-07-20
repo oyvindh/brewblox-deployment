@@ -10,5 +10,6 @@ before_script: cd integration
 
 script:
   - docker-compose pull
-  - tox
+  - docker build -t brewblox/integration .
+  - /bin/bash ./run.sh
   - cat logs/*
