@@ -67,7 +67,7 @@ async def test_read_objects(session, host, sensey):
 
 @pytest.mark.asyncio
 async def test_read_all(session, host):
-    retd = await response(session.get(host + '/spark/saved'))
+    retd = await response(session.get(host + '/spark/saved_objects'))
 
     assert len(retd) == 2
     assert retd[0]['id'] == 'sensey'
@@ -93,7 +93,7 @@ async def test_read_active(session, host):
     assert len(retd) == 2
 
     # all objects are active now
-    assert retd == await response(session.get(host + '/spark/saved'))
+    assert retd == await response(session.get(host + '/spark/saved_objects'))
 
 
 @pytest.mark.asyncio
