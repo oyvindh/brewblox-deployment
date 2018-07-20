@@ -41,7 +41,7 @@ services:
         - "8332"
 
   spark:
-    image: brewblox/brewblox-devcon-spark:feature-rework-cbox-commands
+    image: brewblox/brewblox-devcon-spark:feature-encode-sim-commands
     privileged: true
     depends_on:
       - eventbus
@@ -54,19 +54,6 @@ services:
       - "--unit-system-file=/app/config/celsius_system.txt"
       - "--device-url=sparksimulator"
       - "--device-url-port=8332"
-
-  # sparktest:
-  #   image: brewblox/integration
-  #   build: "."
-  #   depends_on:
-  #     - traefik
-  #     - spark
-  #     - history
-  #     - publisher
-  #     - influx
-  #     - eventbus
-  #   volumes:
-  #     - "./test:/app/test"
 
   traefik:
     image: traefik

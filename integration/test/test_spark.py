@@ -1,7 +1,6 @@
 """
 Tests the brewblox-devcon-spark service
 """
-
 import asyncio
 
 import pytest
@@ -12,6 +11,7 @@ from aiohttp.client_exceptions import ClientResponseError
 def sensey():
     return {
         'id': 'sensey',
+        'profiles': [0, 3, 7],
         'type': 'OneWireTempSensor',
         'data': {
             'settings': {
@@ -22,11 +22,25 @@ def sensey():
     }
 
 
+async def response(coro):
+    retv = await coro
+    return await retv.json()
+
+
+@pytest.mark.asyncio
+async def test_profiles(session, host):
+    url = host + '/spark/profiles'
+    assert await response(session.get(url)) == []
+
+    all_profiles = [i for i in range(8)]
+    assert await response(session.post(url, json=all_profiles)) == all_profiles
+    assert await response(session.get(url)) == all_profiles
+
+
 @pytest.mark.asyncio
 async def test_create_objects(session, host, sensey):
     create_url = host + '/spark/objects'
-    retv = await session.post(create_url, json=sensey)
-    retd = await retv.json()
+    retd = await response(session.post(create_url, json=sensey))
     print(retd)
 
     assert retd['id'] == sensey['id']
@@ -42,8 +56,7 @@ async def test_create_objects(session, host, sensey):
 
 @pytest.mark.asyncio
 async def test_read_objects(session, host, sensey):
-    retv = await session.get(host + '/spark/objects/sensey')
-    retd = await retv.json()
+    retd = await response(session.get(host + '/spark/objects/sensey'))
     print(retd)
 
     assert retd['id'] == 'sensey'
@@ -54,8 +67,7 @@ async def test_read_objects(session, host, sensey):
 
 @pytest.mark.asyncio
 async def test_read_all(session, host):
-    retv = await session.get(host + '/spark/objects')
-    retd = await retv.json()
+    retd = await response(session.get(host + '/spark/saved'))
 
     assert len(retd) == 2
     assert retd[0]['id'] == 'sensey'
@@ -65,15 +77,33 @@ async def test_read_all(session, host):
 
 
 @pytest.mark.asyncio
+async def test_read_active(session, host):
+    await session.post(host + '/spark/profiles', json=[])
+    retd = await response(session.get(host + '/spark/objects'))
+    assert len(retd) == 0
+
+    # activate some empty profiles
+    await session.post(host + '/spark/profiles', json=[1, 2])
+    retd = await response(session.get(host + '/spark/objects'))
+    assert len(retd) == 0
+
+    # activate filled profiles
+    await session.post(host + '/spark/profiles', json=[0, 3, 7])
+    retd = await response(session.get(host + '/spark/objects'))
+    assert len(retd) == 2
+
+    # all objects are active now
+    assert retd == await response(session.get(host + '/spark/saved'))
+
+
+@pytest.mark.asyncio
 async def test_write_object(session, host, sensey):
     url = host + '/spark/objects/sensey'
     del sensey['id']
     sensey['data']['settings']['offset[delta_degF]'] = 30
 
     await session.put(url, json=sensey)
-    retv = await session.get(url)
-    retd = await retv.json()
-
+    retd = await response(session.get(url))
     assert retd['data']['settings']['offset[delta_degC]'] == pytest.approx(16.7, 0.1)
 
 
@@ -92,24 +122,20 @@ async def test_delete_object(session, host, sensey):
 
 @pytest.mark.asyncio
 async def test_read_system(session, host):
-    retv = await session.get(host + '/spark/system/onewirebus')
-    retd = await retv.json()
+    retd = await response(session.get(host + '/spark/system/onewirebus'))
     print(retd)
-
     assert retd['data']['address']
 
 
 @pytest.mark.asyncio
 async def test_write_system(session, host):
-    retv = await session.get(host + '/spark/system/onewirebus')
-    retd = await retv.json()
+    retd = await response(session.get(host + '/spark/system/onewirebus'))
     print(retd)
 
     retd['data']['address'].append('cc')
     await session.put(host + '/spark/system/onewirebus', json=retd)
 
-    retv = await session.get(host + '/spark/system/onewirebus')
-    retd = await retv.json()
+    retd = await response(session.get(host + '/spark/system/onewirebus'))
     print(retd)
 
     assert 'cc' in retd['data']['address']
@@ -120,14 +146,12 @@ async def test_broadcast(session, host):
     # Sleep to ensure broadcaster has sent something
     await asyncio.sleep(2)
 
-    retv = await session.post(host + '/history/query/objects', json={})
-    retd = await retv.json()
+    retd = await response(session.post(host + '/history/query/objects', json={}))
     print(retd)
     assert 'sensey/settings/offset[delta_degC]' in retd['spark']
 
-    retv = await session.post(host + '/history/query/values', json={
+    retd = await response(session.post(host + '/history/query/values', json={
         'measurement': 'spark'
-    })
-    retd = await retv.json()
+    }))
     print(retd)
     assert 'sensey/settings/offset[delta_degC]' in retd['columns']
