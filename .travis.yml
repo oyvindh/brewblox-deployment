@@ -4,12 +4,9 @@ python: '3.6'
 services:
   - docker
 
-install: pip install tox
-
 before_script: cd integration
 
 script:
-  - docker-compose pull
-  - docker build -t brewblox/integration .
+  - /bin/bash ./setup.sh
   - /bin/bash ./run.sh
   - cat logs/*
