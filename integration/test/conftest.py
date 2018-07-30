@@ -34,6 +34,7 @@ def services():
         'history',
         'publisher',
         'spark',
+        'sparktwo',
     ]
 
 

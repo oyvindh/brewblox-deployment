@@ -142,10 +142,37 @@ async def test_write_system(session, host):
 
 
 @pytest.mark.asyncio
-async def test_broadcast(session, host):
-    # Sleep to ensure broadcaster has sent something
+async def test_add_remote_block(session, host, sensey):
+    sensey['id'] = 'remoteblock'
+
+    await response(session.post(host + '/spark/objects', json=sensey))
+    await response(session.post(host + '/sparktwo/objects', json=sensey))
+
+    key = await response(session.post(host + '/spark/remote/master', json={
+        'id': 'remoteblock',
+        'interval': 1
+    }))
+    assert key['key']
+
+    await response(session.post(host + '/sparktwo/remote/slave', json={
+        'id': 'remoteblock',
+        'key': key['key'],
+        'translations': {'settings/offset[delta_degC]': 'state/value[delta_degC]'}
+    }))
+
+    sensey['data']['settings']['offset[delta_degF]'] = 30
+    await response(session.put(host + '/spark/objects/remoteblock', json=sensey))
+
+
+@pytest.mark.asyncio
+async def test_sleepytime():
+    # Data is broadcasted every set interval
+    # We've started the broadcasts previously, now wait to ensure something is sent
     await asyncio.sleep(2)
 
+
+@pytest.mark.asyncio
+async def test_broadcast(session, host):
     retd = await response(session.post(host + '/history/query/objects', json={}))
     print(retd)
     assert 'sensey/settings/offset[delta_degC]' in retd['spark']
@@ -155,3 +182,15 @@ async def test_broadcast(session, host):
     }))
     print(retd)
     assert 'sensey/settings/offset[delta_degC]' in retd['columns']
+
+
+@pytest.mark.asyncio
+async def test_remote_updated(session, host):
+    vals = await response(session.get(host + '/sparktwo/objects/remoteblock'))
+    print(vals)
+
+    # We set master block offset to 30F, and translated offset to value in slave block
+    # We expect slave offset to be default setting (20 delta_degF to delta_degC),
+    # and the value to match master offet (30 delta_degF to delta_degC)
+    assert vals['data']['settings']['offset[delta_degC]'] == pytest.approx(11.1, abs=0.1)
+    assert vals['data']['state']['value[delta_degC]'] == pytest.approx(16.7, abs=0.1)

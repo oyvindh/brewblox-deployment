@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-LOGGED_SERVICES="history publisher sparksimulator spark"
+LOGGED_SERVICES="history publisher sparksimulator spark sparktwo"
 
 rm logs/*
 docker-compose down

@@ -50,10 +50,26 @@ services:
       - "traefik.frontend.rule=PathPrefix: /spark"
     command:
       - "--simulation"
+      - "--debug"
       - "--broadcast-interval=1"
       - "--unit-system-file=/app/config/celsius_system.txt"
       - "--device-url=sparksimulator"
       - "--device-url-port=8332"
+
+  sparktwo:
+    image: brewblox/brewblox-devcon-spark:develop
+    privileged: true
+    depends_on:
+      - eventbus
+    labels:
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /sparktwo"
+    command:
+      - "--name=sparktwo"
+      - "--debug"
+      - "--simulation"
+      - "--broadcast-interval=1"
+      - "--unit-system-file=/app/config/celsius_system.txt"
 
   traefik:
     image: traefik
