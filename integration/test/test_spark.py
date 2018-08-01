@@ -133,12 +133,15 @@ async def test_write_system(session, host):
     print(retd)
 
     retd['data']['address'].append('cc')
+    retd['data']['command']['opcode'] = 5
     await session.put(host + '/spark/system/onewirebus', json=retd)
 
     retd = await response(session.get(host + '/spark/system/onewirebus'))
     print(retd)
 
-    assert 'cc' in retd['data']['address']
+    # address is readonly
+    assert retd['data']['address'] == []
+    assert retd['data']['command']['opcode'] == 5
 
 
 @pytest.mark.asyncio
@@ -157,7 +160,7 @@ async def test_add_remote_block(session, host, sensey):
     await response(session.post(host + '/sparktwo/remote/slave', json={
         'id': 'remoteblock',
         'key': key['key'],
-        'translations': {'settings/offset[delta_degC]': 'state/value[delta_degC]'}
+        'translations': {'settings/offset[delta_degC]': 'state/value[degC]'}
     }))
 
     sensey['data']['settings']['offset[delta_degF]'] = 30
@@ -191,6 +194,7 @@ async def test_remote_updated(session, host):
 
     # We set master block offset to 30F, and translated offset to value in slave block
     # We expect slave offset to be default setting (20 delta_degF to delta_degC),
-    # and the value to match master offet (30 delta_degF to delta_degC)
+    # and the value to match master offet (30 delta_degF to degC)
+    # Note that no unit conversions are done when translating
     assert vals['data']['settings']['offset[delta_degC]'] == pytest.approx(11.1, abs=0.1)
-    assert vals['data']['state']['value[delta_degC]'] == pytest.approx(16.7, abs=0.1)
+    assert vals['data']['state']['value[degC]'] == pytest.approx(16.7, abs=0.1)
