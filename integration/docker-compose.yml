@@ -41,7 +41,7 @@ services:
         - "8332"
 
   spark:
-    image: brewblox/brewblox-devcon-spark:feature-new-system-api
+    image: brewblox/brewblox-devcon-spark:develop
     privileged: true
     depends_on:
       - eventbus
@@ -49,7 +49,7 @@ services:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /spark"
     command:
-      # - "--simulation"
+      - "--simulation"
       - "--debug"
       - "--broadcast-interval=1"
       - "--unit-system-file=/app/config/celsius_system.txt"
@@ -57,7 +57,7 @@ services:
       - "--device-port=8332"
 
   sparktwo:
-    image: brewblox/brewblox-devcon-spark:feature-new-system-api
+    image: brewblox/brewblox-devcon-spark:develop
     privileged: true
     depends_on:
       - eventbus
