@@ -53,8 +53,8 @@ services:
       - "--debug"
       - "--broadcast-interval=1"
       - "--unit-system-file=/app/config/celsius_system.txt"
-      - "--device-url=sparksimulator"
-      - "--device-url-port=8332"
+      - "--device-host=sparksimulator"
+      - "--device-port=8332"
 
   sparktwo:
     image: brewblox/brewblox-devcon-spark:develop
