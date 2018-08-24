@@ -6,8 +6,6 @@ import asyncio
 import pytest
 from aiohttp.client_exceptions import ClientResponseError
 
-N_SYS_OBJECTS = 4
-
 
 @pytest.fixture
 def sensey():
@@ -25,6 +23,10 @@ def sensey():
 async def response(coro):
     retv = await coro
     return await retv.json()
+
+
+def ids(obj_list):
+    return {obj['id'] for obj in obj_list}
 
 
 @pytest.mark.asyncio
@@ -67,34 +69,35 @@ async def test_read_objects(session, host, sensey):
 
 @pytest.mark.asyncio
 async def test_read_all(session, host):
-    retd = await response(session.get(host + '/spark/stored_objects'))
+    retd = await response(session.get(host + '/spark/objects'))
 
-    assert len(retd) == 2 + N_SYS_OBJECTS
-    retd = retd[N_SYS_OBJECTS:]
-    assert retd[0]['id'] == 'sensey'
-    assert retd[1]['id'] == 'sensex'
-
-    assert retd[0]['type'] == 'OneWireTempSensor'
+    assert {'sensey', 'sensex'} & ids(retd)
+    assert retd[-1]['id'] == 'sensex'
+    assert retd[-1]['type'] == 'OneWireTempSensor'
 
 
 @pytest.mark.asyncio
 async def test_read_active(session, host):
     await session.put(host + '/spark/system/profiles', json=[])
     retd = await response(session.get(host + '/spark/objects'))
-    assert len(retd) == 0 + N_SYS_OBJECTS
+    assert retd[-1]['id'] == 'sensex'
+    assert retd[-1]['type'] == 'InactiveObject'
 
     # activate some empty profiles
     await session.put(host + '/spark/system/profiles', json=[1, 2])
     retd = await response(session.get(host + '/spark/objects'))
-    assert len(retd) == 0 + N_SYS_OBJECTS
+    assert retd[-1]['id'] == 'sensex'
+    assert retd[-1]['type'] == 'InactiveObject'
 
     # activate filled profiles
     await session.put(host + '/spark/system/profiles', json=[0, 3, 7])
     retd = await response(session.get(host + '/spark/objects'))
-    assert len(retd) == 2 + N_SYS_OBJECTS
+    assert retd[-1]['id'] == 'sensex'
+    assert retd[-1]['type'] == 'OneWireTempSensor'
 
     # all objects are active now
-    assert retd == await response(session.get(host + '/spark/stored_objects'))
+    stored = await response(session.get(host + '/spark/stored_objects'))
+    assert 'InactiveObject' not in {obj['type'] for obj in stored}
 
 
 @pytest.mark.asyncio
@@ -174,4 +177,3 @@ async def test_remote_updated(session, host):
     # and the value to match master offet (30 delta_degF to degC)
     # Note that no unit conversions are done when translating
     assert vals['data']['offset[delta_degC]'] == pytest.approx(11.1, abs=0.1)
-    assert vals['data']['value[degC]'] == pytest.approx(16.7, abs=0.1)
