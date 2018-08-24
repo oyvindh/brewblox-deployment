@@ -33,7 +33,7 @@ services:
       - "--name=publisher"
 
   sparksimulator:
-    image: brewblox/firmware-simulator
+    image: brewblox/firmware-simulator:develop
     volumes:
         - "/etc/timezone:/etc/timezone:ro"
         - "/etc/localtime:/etc/localtime:ro"
@@ -49,12 +49,10 @@ services:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /spark"
     command:
-      - "--simulation"
       - "--debug"
       - "--broadcast-interval=1"
       - "--unit-system-file=/app/config/celsius_system.txt"
       - "--device-host=sparksimulator"
-      - "--device-port=8332"
 
   sparktwo:
     image: brewblox/brewblox-devcon-spark:develop
@@ -67,9 +65,9 @@ services:
     command:
       - "--name=sparktwo"
       - "--debug"
-      - "--simulation"
       - "--broadcast-interval=1"
       - "--unit-system-file=/app/config/celsius_system.txt"
+      - "--simulation"
 
   traefik:
     image: traefik
