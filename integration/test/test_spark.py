@@ -12,7 +12,7 @@ def sensey():
     return {
         'id': 'sensey',
         'profiles': [0, 3, 7],
-        'type': 'OneWireTempSensor',
+        'type': 'TempSensorOneWire',
         'data': {
             'address': 'FF',
             'offset[delta_degF]': 20
@@ -71,9 +71,22 @@ async def test_read_objects(session, host, sensey):
 async def test_read_all(session, host):
     retd = await response(session.get(host + '/spark/objects'))
 
-    assert {'sensey', 'sensex'} & ids(retd)
+    assert {'sensey', 'sensex'}.issubset(ids(retd))
     assert retd[-1]['id'] == 'sensex'
-    assert retd[-1]['type'] == 'OneWireTempSensor'
+    assert retd[-1]['type'] == 'TempSensorOneWire'
+
+
+@pytest.mark.asyncio
+async def test_seed_objects(session, host):
+    retd = await response(session.get(host + '/sparktwo/objects'))
+
+    assert {'setpoint-1', 'setpoint-2', 'setpoint-inactive', 'sensor-1', 'sensor-onewire-1',
+            'sensor-setpoint-pair-1', 'actuator-1', 'actuator-pin-1', 'actuator-pwm-1', 'pid-1'}.issubset(ids(retd))
+
+
+@pytest.mark.asyncio
+async def test_seed_profiles(session, host):
+    assert await response(session.get(host + '/sparktwo/system/profiles')) == [0, 7]
 
 
 @pytest.mark.asyncio
@@ -93,7 +106,7 @@ async def test_read_active(session, host):
     await session.put(host + '/spark/system/profiles', json=[0, 3, 7])
     retd = await response(session.get(host + '/spark/objects'))
     assert retd[-1]['id'] == 'sensex'
-    assert retd[-1]['type'] == 'OneWireTempSensor'
+    assert retd[-1]['type'] == 'TempSensorOneWire'
 
     # all objects are active now
     stored = await response(session.get(host + '/spark/stored_objects'))
