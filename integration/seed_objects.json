@@ -1,0 +1,160 @@
+[
+    {
+        "id": "setpoint-1",
+        "profiles": [
+            0
+        ],
+        "type": "SetpointSimple",
+        "data": {
+            "setting": 21
+        }
+    },
+    {
+        "id": "setpoint-2",
+        "profiles": [
+            0
+        ],
+        "type": "SetpointSimple",
+        "data": {
+            "setting": 50
+        }
+    },
+    {
+        "id": "setpoint-inactive",
+        "profiles": [],
+        "type": "SetpointSimple",
+        "data": {
+            "setting": 3
+        }
+    },
+    {
+        "id": "sensor-1",
+        "profiles": [
+            0
+        ],
+        "type": "TempSensorMock",
+        "data": {
+            "value[celsius]": 20.89789201,
+            "valid": true
+        }
+    },
+    {
+        "id": "sensor-onewire-1",
+        "profiles": [
+            0
+        ],
+        "type": "TempSensorOneWire",
+        "data": {
+            "value[celsius]": 20.89789201,
+            "valid": true,
+            "offset[delta_degC]": 9,
+            "address": "DEADBEEF"
+        }
+    },
+    {
+        "id": "sensor-setpoint-pair-1",
+        "profiles": [
+            0
+        ],
+        "type": "SetpointSensorPair",
+        "data": {
+            "sensorId<>": "sensor-1",
+            "setpointId<>": "setpoint-1",
+            "setpointValid": true,
+            "sensorValid": true,
+            "setpointValue": 0,
+            "sensorValue": 0
+        }
+    },
+    {
+        "id": "actuator-1",
+        "profiles": [
+            0
+        ],
+        "type": "ActuatorAnalogMock",
+        "data": {
+            "valid": true,
+            "setting": 20,
+            "minSetting": 10,
+            "maxSetting": 30,
+            "value": 50,
+            "minValue": 40,
+            "maxValue": 60
+        }
+    },
+    {
+        "id": "actuator-pin-1",
+        "profiles": [
+            0
+        ],
+        "type": "ActuatorPin",
+        "data": {
+            "constrainedBy": {
+                "constraints": [
+                    {
+                        "minOff": 10
+                    },
+                    {
+                        "minOn": 15
+                    },
+                    {
+                        "mutex<>": "actuator-1"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "id": "actuator-pwm-1",
+        "profiles": [
+            0
+        ],
+        "type": "ActuatorPwm",
+        "data": {
+            "actuatorId<>": "actuator-1",
+            "constrainedBy": {
+                "constraints": [
+                    {
+                        "min": 5
+                    },
+                    {
+                        "max": 10
+                    },
+                    {
+                        "balancer<>": "actuator-1"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "id": "pid-1",
+        "profiles": [
+            0
+        ],
+        "type": "Pid",
+        "data": {
+            "inputId<>": "sensor-1",
+            "outputId<>": "actuator-1",
+            "inputValid": true,
+            "outputValid": true,
+            "inputValue": 0,
+            "inputSetting": 10,
+            "outputValue": 20,
+            "outputSetting": 30,
+            "filter": 0,
+            "filterThreshold": 50,
+            "enabled": true,
+            "active": true,
+            "kp": 60,
+            "ti": 70,
+            "td": 80,
+            "p": 90,
+            "i": 100,
+            "d": 110,
+            "error": 120,
+            "integral": 130,
+            "derivative[kelvin/second]": 140
+        }
+    }
+]
