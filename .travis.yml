@@ -7,6 +7,9 @@ services:
 before_script: cd integration
 
 script:
-  - /bin/bash ./setup.sh
+  # Note: for local installs outside a virtual env, use pip3
+  - pip install pipenv
+  - pipenv sync
+  - docker-compose pull
   - /bin/bash ./run.sh
   - cat logs/*

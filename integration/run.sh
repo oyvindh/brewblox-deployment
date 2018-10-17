@@ -6,11 +6,7 @@ rm logs/*
 docker-compose down
 docker-compose up -d
 
-docker run --rm -t --network=host \
-    -v $(pwd)/test:/app/test \
-    -v $(pwd)/logs:/app/logs \
-    brewblox/integration \
-    "$@"
+pipenv run pytest "$@"
 
 RESULT=$?
 

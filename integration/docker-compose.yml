@@ -51,9 +51,7 @@ services:
     command: >
       --debug
       --broadcast-interval=1
-      --unit-system-file=/app/config/celsius_system.txt
       --device-host=sparksimulator
-      --simulation
 
   sparktwo:
     image: brewblox/brewblox-devcon-spark:develop
@@ -69,7 +67,6 @@ services:
       --name=sparktwo
       --debug
       --broadcast-interval=1
-      --unit-system-file=/app/config/celsius_system.txt
       --seed-profiles 0 7
       --seed-objects=seed_objects.json
       --simulation
