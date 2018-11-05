@@ -1,0 +1,26 @@
+{
+    "dashboard-items": [],
+    "dashboards": [
+        {
+            "id": "dashboard-default",
+            "title": "Default Dashboard",
+            "order": 1
+        }
+    ],
+    "services": [
+        {
+            "id": "spark",
+            "title": "Spark Service 'spark'",
+            "order": 1,
+            "type": "Spark",
+            "config": {}
+        },
+        {
+            "id": "history",
+            "title": "History Service 'history'",
+            "order": 2,
+            "type": "History",
+            "config": {}
+        }
+    ]
+}
