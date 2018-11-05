@@ -1,40 +1,52 @@
 version: '3'
 
 services:
-  eventbus:
-    image: rabbitmq:alpine
-
-  influx:
-    image: hypriot/rpi-influxdb
-
-  simulator:
-    image: brewblox/brewblox-service:rpi-latest
-    depends_on:
-      - eventbus
-    labels:
-      - "traefik.port=5000"
-      - "traefik.frontend.rule=PathPrefix: /simulator"
-
   spark:
-    image: brewblox/brewblox-devcon-spark:rpi-latest
+    image: brewblox/brewblox-devcon-spark:rpi-develop
     privileged: true
     depends_on:
       - eventbus
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /spark"
+    volumes:
+      - "./app/brewblox_db.json:/app/brewblox_db.json"
+      - "./app/brewblox_config.json:/app/brewblox_config.json"
+    # command: >
+    #   --device-host=192.168.0.2
 
   history:
-    image: brewblox/brewblox-history:rpi-latest
+    image: brewblox/brewblox-history:rpi-develop
     depends_on:
       - influx
       - eventbus
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /history"
-    # volumes:
-      # Uncomment this to use host machine packages instead of PyPi
-      # - ~/.local/lib/python3.6/site-packages:/usr/local/lib/python3.6/site-packages
+
+  ui:
+    image: brewblox/brewblox-ui:rpi-develop
+    labels:
+      - "traefik.port=80"
+      - "traefik.frontend.rule=PathPrefix: /"
+
+  datastore:
+    image: brewblox/brewblox-datastore:rpi-develop
+    labels:
+      - "traefik.port=3000"
+      - "traefik.frontend.rule=PathPrefixStrip: /datastore"
+    volumes:
+      - "./app/datastore.json:/app/datastore.json"
+    command: >
+      datastore.json
+
+  eventbus:
+    image: rabbitmq:alpine
+
+  influx:
+    image: hypriot/rpi-influxdb
+    volumes:
+    - "./influxdb:/var/lib/influxdb"
 
   traefik:
     image: traefik
@@ -47,7 +59,6 @@ services:
 
   portainer:
     image: portainer/portainer
-    restart: always
     command: -H unix:///var/run/docker.sock
     ports:
       - "9000:9000"

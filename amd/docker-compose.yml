@@ -1,40 +1,52 @@
 version: '3'
 
 services:
-  eventbus:
-    image: rabbitmq:alpine
-
-  influx:
-    image: influxdb:alpine
-
-  simulator:
-    image: brewblox/brewblox-service:latest
-    depends_on:
-      - eventbus
-    labels:
-      - "traefik.port=5000"
-      - "traefik.frontend.rule=PathPrefix: /simulator"
-
-  history:
-    image: brewblox/brewblox-history:latest
-    depends_on:
-      - influx
-      - eventbus
-    labels:
-      - "traefik.port=5000"
-      - "traefik.frontend.rule=PathPrefix: /history"
-    # volumes:
-      # Uncomment this to use host machine packages instead of PyPi
-      # - ~/.local/lib/python3.6/site-packages:/usr/local/lib/python3.6/site-packages
-
   spark:
-    image: brewblox/brewblox-devcon-spark:latest
+    image: brewblox/brewblox-devcon-spark:develop
     privileged: true
     depends_on:
       - eventbus
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /spark"
+    volumes:
+      - "./app/brewblox_db.json:/app/brewblox_db.json"
+      - "./app/brewblox_config.json:/app/brewblox_config.json"
+    # command: >
+    #   --device-host=192.168.0.2
+
+  history:
+    image: brewblox/brewblox-history:develop
+    depends_on:
+      - influx
+      - eventbus
+    labels:
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /history"
+
+  ui:
+    image: brewblox/brewblox-ui:develop
+    labels:
+      - "traefik.port=80"
+      - "traefik.frontend.rule=PathPrefix: /"
+
+  datastore:
+    image: brewblox/brewblox-datastore:develop
+    labels:
+      - "traefik.port=3000"
+      - "traefik.frontend.rule=PathPrefixStrip: /datastore"
+    volumes:
+      - "./app/datastore.json:/app/datastore.json"
+    command: >
+      datastore.json
+
+  eventbus:
+    image: rabbitmq:alpine
+
+  influx:
+    image: influxdb:alpine
+    volumes:
+    - "./influxdb:/var/lib/influxdb"
 
   traefik:
     image: traefik
@@ -47,7 +59,6 @@ services:
 
   portainer:
     image: portainer/portainer
-    restart: always
     command: -H unix:///var/run/docker.sock
     ports:
       - "9000:9000"

@@ -13,7 +13,7 @@ nesdict = "*"
 pprint = "*"
 docker-compose = "*"
 pytest-asyncio = "*"
-pytest = "==3.6.4"
+pytest = "*"
 
 [dev-packages]
 "autopep8" = "*"
