@@ -33,12 +33,12 @@ services:
   datastore:
     image: brewblox/brewblox-datastore:rpi-develop
     labels:
-      - "traefik.port=3000"
-      - "traefik.frontend.rule=PathPrefixStrip: /datastore"
+      - "traefik.port=5000"
+      - "traefik.frontend.rule=PathPrefix: /datastore"
     volumes:
-      - "./app/datastore.json:/app/datastore.json"
+      - "./mocks/config/datastore.json:/app/datastore.json"
     command: >
-      datastore.json
+      --file datastore.json
 
   eventbus:
     image: rabbitmq:alpine
