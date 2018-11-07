@@ -36,7 +36,7 @@ services:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /datastore"
     volumes:
-      - "./mocks/config/datastore.json:/app/datastore.json"
+      - "./app/datastore.json:/app/datastore.json"
     command: >
       --file datastore.json
 
