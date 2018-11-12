@@ -43,8 +43,6 @@ async def test_profiles(session, host):
 async def test_units(session, host):
     units = {
         'Temp': 'degC',
-        'DeltaTemp': 'delta_degC',
-        'DeltaTempPerTime': 'delta_degC / second',
         'Time': 'second',
     }
     assert await response(session.put(host + '/spark/codec/units', json=units)) == units
