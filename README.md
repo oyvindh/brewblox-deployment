@@ -6,13 +6,50 @@ This repository contains integration tests for BrewBlox, and example configurati
 
 ### Requirements
 
-- Raspberry Pi or Linux desktop computer
+- Desktop / laptop computer
+- Raspberry Pi or Linux desktop computer / laptop
 - BrewPi Spark controller
 - Git
 - Docker
 - Docker-compose
 
-### Clone the repository
+
+## Firmware
+
+Note: While the services can be run on a Raspberry Pi, building and flashing the firmware must be done on an AMD64 / x86_64 system.
+
+### Clone the firmware repository
+
+In your terminal, run
+
+```
+git clone https://github.com/BrewPi/firmware.git
+cd firmware
+git checkout feature/brewblox
+cd docker
+```
+
+### Put the Spark in DFU mode
+
+- Connect the spark to your computer using the usb cable
+- Unplug the spark usb cable
+- There are two sunken buttons on the right side of the spark. Press and hold the top one (you'll need something pointy)
+- Reconnect the usb cable while still holding the button
+- Release the button: the led light should be blinking purple
+
+### Flash the firmware
+
+In your terminal (still in the firmware/docker directory), run
+
+```
+docker-compose up -d compiler
+docker-compose exec compiler bash compile-proto.sh
+sudo docker-compose exec compiler make APP=brewblox PLATFORM=p1 program-dfu
+```
+
+## Services
+
+### Clone the deployment repository
 
 In your terminal, run
 
