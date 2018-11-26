@@ -6,32 +6,36 @@ services:
     privileged: true
     depends_on:
       - eventbus
+    restart: unless-stopped
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /spark"
     volumes:
       - "./app/brewblox_db.json:/app/brewblox_db.json"
       - "./app/brewblox_config.json:/app/brewblox_config.json"
-    # command: >
-    #   --device-host=192.168.0.2
+    command: >
+      --device-host=192.168.0.2
 
   history:
     image: brewblox/brewblox-history:develop
     depends_on:
       - influx
       - eventbus
+    restart: unless-stopped
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /history"
 
   ui:
     image: brewblox/brewblox-ui:develop
+    restart: unless-stopped
     labels:
       - "traefik.port=80"
       - "traefik.frontend.rule=PathPrefix: /"
 
   datastore:
     image: brewblox/brewblox-datastore:develop
+    restart: unless-stopped
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /datastore"
@@ -42,25 +46,29 @@ services:
 
   eventbus:
     image: rabbitmq:alpine
+    restart: unless-stopped
 
   influx:
     image: influxdb:alpine
+    restart: unless-stopped
     volumes:
     - "./influxdb:/var/lib/influxdb"
 
   traefik:
     image: traefik
-    command: -c /dev/null --api --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    restart: unless-stopped
     ports:
       - "80:80"
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    command: -c /dev/null --api --docker --docker.domain=docker.localhost --logLevel=DEBUG
 
   portainer:
     image: portainer/portainer
-    command: -H unix:///var/run/docker.sock
+    restart: unless-stopped
     ports:
       - "9000:9000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    command: -H unix:///var/run/docker.sock
