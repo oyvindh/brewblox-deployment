@@ -8,7 +8,7 @@ services:
       - "15672:15672"
 
   influx:
-    image: influxdb:alpine
+    image: influxdb
     ports:
       # Allow external status checks
       - "8086:8086"
