@@ -49,7 +49,7 @@ services:
     restart: unless-stopped
 
   influx:
-    image: influxdb:alpine
+    image: influxdb
     restart: unless-stopped
     volumes:
     - "./influxdb:/var/lib/influxdb"
