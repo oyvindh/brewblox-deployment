@@ -70,4 +70,7 @@ target/
 .pytest_cache/
 
 # deployment settings
-influxdb/
+**/influxdb/*
+!**/influxdb/.gitkeep
+**/couchdb/*
+!**/couchdb/.gitkeep
