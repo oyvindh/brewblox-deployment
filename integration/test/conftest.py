@@ -53,14 +53,12 @@ async def session(event_loop, services, host):
 
     # Create session. This will be used for all tests
     async with aiohttp.ClientSession(raise_for_status=True) as session:
-        async with timeout(15):
-            await asyncio.wait(
-                [wait_online(session, f'{host}/{svc}/_service/status') for svc in services]
-                +
-                [
-                    wait_online(session, host + ':15672/'),  # eventbus management port
-                    wait_online(session, host + ':8086/ping'),  # influxdb status check
-                ]
+        async with timeout(30):
+            await asyncio.gather(
+                *[wait_online(session, f'{host}/{svc}/_service/status') for svc in services],
+                wait_online(session, host + ':15672/'),  # eventbus management port
+                wait_online(session, host + ':8086/ping'),  # influxdb status check
+                wait_online(session, host + '/datastore'),  # couchdb status check
             )
 
         yield session
