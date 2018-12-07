@@ -13,6 +13,12 @@ services:
       # Allow external status checks
       - "8086:8086"
 
+  datastore:
+    image: treehouses/couchdb
+    labels:
+      - "traefik.port=5984"
+      - "traefik.frontend.rule=PathPrefixStrip: /datastore"
+
   history:
     image: brewblox/brewblox-history:develop
     depends_on:
@@ -45,6 +51,7 @@ services:
     privileged: true
     depends_on:
       - eventbus
+      - datastore
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /spark"
@@ -56,10 +63,9 @@ services:
   sparktwo:
     image: brewblox/brewblox-devcon-spark:develop
     privileged: true
-    volumes:
-      - "./seed_objects.json:/app/seed_objects.json"
     depends_on:
       - eventbus
+      - datastore
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /sparktwo"
@@ -67,8 +73,6 @@ services:
       --name=sparktwo
       --debug
       --broadcast-interval=1
-      --seed-profiles 0 7
-      --seed-objects=seed_objects.json
       --simulation
 
   traefik:

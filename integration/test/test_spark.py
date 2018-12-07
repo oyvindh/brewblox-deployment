@@ -2,6 +2,7 @@
 Tests the brewblox-devcon-spark service
 """
 import asyncio
+import json
 
 import pytest
 from aiohttp.client_exceptions import ClientResponseError
@@ -87,16 +88,15 @@ async def test_read_all(session, host):
 
 
 @pytest.mark.asyncio
-async def test_seed_objects(session, host):
+async def test_reset_objects(session, host):
+    with open('seed_objects.json') as f:
+        objs = json.load(f)
+
+    await response(session.post(host + '/sparktwo/reset_objects', json=objs))
     retd = await response(session.get(host + '/sparktwo/objects'))
 
     assert {'setpoint-1', 'setpoint-2', 'setpoint-inactive', 'sensor-1', 'sensor-onewire-1',
             'sensor-setpoint-pair-1', 'actuator-1', 'actuator-pin-1', 'actuator-pwm-1', 'pid-1'}.issubset(ids(retd))
-
-
-@pytest.mark.asyncio
-async def test_seed_profiles(session, host):
-    assert await response(session.get(host + '/sparktwo/system/profiles')) == [0, 7]
 
 
 @pytest.mark.asyncio
