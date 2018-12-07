@@ -59,10 +59,10 @@ git clone https://github.com/BrewBlox/brewblox-deployment.git
 
 ### Select a configuration
 
-There are two sets of configurations, AMD, and ARM.
+There are two sets of configurations available: `amd64`, and `armhf`.
 
-If you're installing BrewBlox on a desktop computer, choose `brewblox-deployment/amd`. <br>
-If you're installing Brewblox on a Raspberry Pi, choose `brewblox-deployment/arm`.
+If you're installing BrewBlox on a desktop computer, choose `brewblox-deployment/amd64`. <br>
+If you're installing Brewblox on a Raspberry Pi, choose `brewblox-deployment/armhf`.
 
 ### Set Spark address
 
