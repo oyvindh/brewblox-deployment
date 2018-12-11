@@ -2,6 +2,11 @@ version: '3'
 
 services:
 
+  mdns:
+    image: brewblox/brewblox-mdns:rpi-develop
+    network_mode: host
+    restart: unless-stopped
+
   eventbus:
     image: rabbitmq:alpine
     restart: unless-stopped
@@ -11,6 +16,9 @@ services:
     restart: unless-stopped
     volumes:
       - ./influxdb:/var/lib/influxdb
+    environment:
+      - INFLUXDB_HTTP_LOG_ENABLED=false
+      - INFLUXDB_LOGGING_LEVEL=warn
 
   datastore:
     image: treehouses/couchdb
