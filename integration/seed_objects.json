@@ -1,12 +1,54 @@
 [
     {
+        "id": "balancer-1",
+        "profiles": [
+            0
+        ],
+        "type": "Balancer",
+        "data": {}
+    },
+    {
+        "id": "mutex-1",
+        "profiles": [
+            0
+        ],
+        "type": "Mutex",
+        "data": {
+            "differentActuatorWait": 43
+        }
+    },
+    {
+        "id": "profile-1",
+        "profiles": [
+            0
+        ],
+        "type": "SetpointProfile",
+        "data": {
+            "points": [
+                {
+                    "time": 1540376829,
+                    "temperature[degC]": 0
+                },
+                {
+                    "time": 1540376839,
+                    "temperature[degC]": 50
+                },
+                {
+                    "time": 1540376849,
+                    "temperature[degC]": 100
+                }
+            ]
+        }
+    },
+    {
         "id": "setpoint-1",
         "profiles": [
             0
         ],
         "type": "SetpointSimple",
         "data": {
-            "setting": 21
+            "setting": 21,
+            "enabled": true
         }
     },
     {
@@ -16,7 +58,8 @@
         ],
         "type": "SetpointSimple",
         "data": {
-            "setting": 50
+            "setting": 50,
+            "enabled": false
         }
     },
     {
@@ -24,7 +67,8 @@
         "profiles": [],
         "type": "SetpointSimple",
         "data": {
-            "setting": 3
+            "setting": 3,
+            "enabled": true
         }
     },
     {
@@ -35,7 +79,7 @@
         "type": "TempSensorMock",
         "data": {
             "value[celsius]": 20.89789201,
-            "valid": true
+            "connected": true
         }
     },
     {
@@ -46,13 +90,12 @@
         "type": "TempSensorOneWire",
         "data": {
             "value[celsius]": 20.89789201,
-            "valid": true,
             "offset[delta_degC]": 9,
             "address": "DEADBEEF"
         }
     },
     {
-        "id": "sensor-setpoint-pair-1",
+        "id": "setpoint-sensor-pair-1",
         "profiles": [
             0
         ],
@@ -60,8 +103,6 @@
         "data": {
             "sensorId<>": "sensor-1",
             "setpointId<>": "setpoint-1",
-            "setpointValid": true,
-            "sensorValid": true,
             "setpointValue": 0,
             "sensorValue": 0
         }
@@ -73,35 +114,12 @@
         ],
         "type": "ActuatorAnalogMock",
         "data": {
-            "valid": true,
             "setting": 20,
             "minSetting": 10,
             "maxSetting": 30,
             "value": 50,
             "minValue": 40,
             "maxValue": 60
-        }
-    },
-    {
-        "id": "actuator-pin-1",
-        "profiles": [
-            0
-        ],
-        "type": "ActuatorPin",
-        "data": {
-            "constrainedBy": {
-                "constraints": [
-                    {
-                        "minOff": 10
-                    },
-                    {
-                        "minOn": 15
-                    },
-                    {
-                        "mutex<>": "actuator-1"
-                    }
-                ]
-            }
         }
     },
     {
@@ -121,12 +139,40 @@
                         "max": 10
                     },
                     {
-                        "balanced": {
-                            "balancerId<>": "actuator-1"
+                        "balanced<>": {
+                            "balancerId<>": "balancer-1"
                         }
                     }
                 ]
             }
+        }
+    },
+    {
+        "id": "actuator-ds2413-1",
+        "profiles": [
+            0
+        ],
+        "type": "ActuatorDS2413",
+        "data": {
+            "channel": 1,
+            "constrainedBy": {
+                "constraints": [
+                    {
+                        "mutex<>": "mutex-1"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "id": "offset-1",
+        "profiles": [
+            0
+        ],
+        "type": "ActuatorOffset",
+        "data": {
+            "targetId<ProcessValueLink>": "setpoint-sensor-pair-1",
+            "referenceId<ProcessValueLink>": "setpoint-sensor-pair-1"
         }
     },
     {
@@ -136,15 +182,13 @@
         ],
         "type": "Pid",
         "data": {
-            "inputId<>": "sensor-1",
+            "inputId<>": "setpoint-sensor-pair-1",
             "outputId<>": "actuator-1",
-            "inputValid": true,
-            "outputValid": true,
             "inputValue": 0,
             "inputSetting": 10,
             "outputValue": 20,
             "outputSetting": 30,
-            "filter": 0,
+            "filter": "FILT_30s",
             "filterThreshold": 50,
             "enabled": true,
             "active": true,
@@ -156,7 +200,7 @@
             "d": 110,
             "error": 120,
             "integral": 130,
-            "derivative[kelvin/second]": 140
+            "derivative": 140
         }
     }
 ]

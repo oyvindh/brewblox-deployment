@@ -96,7 +96,7 @@ async def test_reset_objects(session, host):
     retd = await response(session.get(host + '/sparktwo/objects'))
 
     assert {'setpoint-1', 'setpoint-2', 'setpoint-inactive', 'sensor-1', 'sensor-onewire-1',
-            'sensor-setpoint-pair-1', 'actuator-1', 'actuator-pin-1', 'actuator-pwm-1', 'pid-1'}.issubset(ids(retd))
+            'setpoint-sensor-pair-1', 'actuator-1', 'actuator-pwm-1', 'pid-1'}.issubset(ids(retd))
 
 
 @pytest.mark.asyncio
@@ -181,13 +181,13 @@ async def test_sleepytime():
 async def test_broadcast(session, host):
     retd = await response(session.post(host + '/history/query/objects', json={}))
     print(retd)
-    assert 'sensey/offset[delta_degC]' in retd['spark']
+    assert 'setpoint-1/setting[degC]' in retd['sparktwo']
 
     retd = await response(session.post(host + '/history/query/values', json={
-        'measurement': 'spark'
+        'measurement': 'sparktwo'
     }))
     print(retd)
-    assert 'sensey/offset[delta_degC]' in retd['columns']
+    assert 'setpoint-1/setting[degC]' in retd['columns']
 
 
 @pytest.mark.asyncio
