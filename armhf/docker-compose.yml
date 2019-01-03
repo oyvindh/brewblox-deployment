@@ -38,8 +38,6 @@ services:
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /spark"
-    # command: >
-    #   --device-host=192.168.0.2
 
   history:
     image: brewblox/brewblox-history:rpi-develop
