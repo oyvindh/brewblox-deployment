@@ -8,8 +8,16 @@ This repository contains integration tests for BrewBlox, and example configurati
 
 - Raspberry Pi or Linux desktop computer / laptop
 - BrewPi Spark controller
-- Docker
 
+## Install
+
+On the machine where you want to run BrewBlox, open your terminal, and navigate to the directory where you want to place the configuration files. A `./brewblox/` subdirectory will be automatically created.
+
+Download and run the install script. This will install Docker, docker-compose, and the default BrewBlox configuration.
+
+```
+curl -sSL https://brewblox.netlify.com/install | sh
+```
 
 ## Flash the firmware
 
@@ -35,15 +43,7 @@ docker run --rm --privileged brewblox/firmware-flasher:rpi-develop flash
 
 ### Install
 
-On the machine where you want to run BrewBlox, open your terminal, and navigate to the directory where you want to place the configuration files. A `./brewblox/` subdirectory will be automatically created.
-
-Download and run the install script. This will install Docker, docker-compose, and the default BrewBlox configuration.
-
-```
-curl -sSL https://brewblox.netlify.com/install | sh
-```
-
-Now pull the docker images. This may take a few minutes.
+Pull the docker images. This may take a few minutes.
 
 ```
 cd brewblox
