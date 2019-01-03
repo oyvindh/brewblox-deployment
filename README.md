@@ -6,7 +6,6 @@ This repository contains integration tests for BrewBlox, and example configurati
 
 ### Requirements
 
-- Desktop / laptop computer
 - Raspberry Pi or Linux desktop computer / laptop
 - BrewPi Spark controller
 - Docker
@@ -14,13 +13,22 @@ This repository contains integration tests for BrewBlox, and example configurati
 
 ## Flash the firmware
 
-Note: While the services can be run on a Raspberry Pi, flashing the firmware must be done on an AMD64 / x86_64 system.
+### Desktop computer
 
 Connect the Spark to the computer using USB, and run the following commands:
 
 ```
 docker run --rm --privileged brewblox/firmware-flasher:develop prepare
 docker run --rm --privileged brewblox/firmware-flasher:develop flash
+```
+
+### Raspberry Pi
+
+Connect the Spark to the Raspberry Pi using USB, and run the following commands:
+
+```
+docker run --rm --privileged brewblox/firmware-flasher:rpi-develop prepare
+docker run --rm --privileged brewblox/firmware-flasher:rpi-develop flash
 ```
 
 ## Services
