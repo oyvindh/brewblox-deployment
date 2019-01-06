@@ -16,7 +16,7 @@ On the machine where you want to run BrewBlox, open your terminal, and navigate 
 Download and run the install script. This will install Docker, docker-compose, and the default BrewBlox configuration.
 
 ```
-curl -sSL https://brewblox.netlify.com/install | sh
+curl -sSL https://brewblox.netlify.com/install | bash
 ```
 
 ## Flash the firmware
