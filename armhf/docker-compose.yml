@@ -61,10 +61,11 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-      - "8080:8080"
+      - "443:443"
     volumes:
+      - ./traefik:/config
       - /var/run/docker.sock:/var/run/docker.sock
-    command: -c /dev/null --api --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    command: -c /config/traefik.toml --docker --docker.domain=brewblox.local
 
   portainer:
     image: portainer/portainer

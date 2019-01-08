@@ -16,7 +16,8 @@ On the machine where you want to run BrewBlox, open your terminal, and navigate 
 Download and run the install script. This will install Docker, docker-compose, and the default BrewBlox configuration.
 
 ```
-curl -sSL https://brewblox.netlify.com/install | bash
+curl -sSL https://brewblox.netlify.com/install > install.sh
+bash ./install.sh
 ```
 
 ## Flash the firmware
@@ -26,6 +27,7 @@ curl -sSL https://brewblox.netlify.com/install | bash
 Connect the Spark to the computer using USB, and run the following commands:
 
 ```
+docker pull brewblox/firmware-flasher:develop
 docker run --rm --privileged brewblox/firmware-flasher:develop prepare
 docker run --rm --privileged brewblox/firmware-flasher:develop flash
 ```
@@ -35,6 +37,7 @@ docker run --rm --privileged brewblox/firmware-flasher:develop flash
 Connect the Spark to the Raspberry Pi using USB, and run the following commands:
 
 ```
+docker pull brewblox/firmware-flasher:rpi-develop
 docker run --rm --privileged brewblox/firmware-flasher:rpi-develop prepare
 docker run --rm --privileged brewblox/firmware-flasher:rpi-develop flash
 ```
@@ -48,6 +51,9 @@ Pull the docker images. This may take a few minutes.
 ```
 cd brewblox
 docker-compose pull
+
+# Run the first-time setup script
+bash ./first-time.sh
 ```
 
 ### Start
