@@ -1,0 +1,11 @@
+{
+    "docs": [
+        {
+            "_id": "spark",
+            "title": "Spark Controller 'spark'",
+            "order": 1,
+            "type": "Spark",
+            "config": {}
+        }
+    ]
+}
