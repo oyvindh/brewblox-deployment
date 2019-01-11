@@ -10,7 +10,7 @@ cp $(which qemu-arm-static) .
 python3 ./enable_experimental.py
 
 PYTHON_TAGS="3.6 3.6-slim 3.7 3.7-slim"
-NODE_TAGS="11"
+NODE_TAGS="11 11-slim"
 
 for tag in ${PYTHON_TAGS}; do
     echo "
