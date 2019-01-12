@@ -22,6 +22,7 @@ services:
 
   datastore:
     image: treehouses/couchdb
+    restart: unless-stopped
     labels:
       - "traefik.port=5984"
       - "traefik.frontend.rule=PathPrefixStrip: /datastore"
