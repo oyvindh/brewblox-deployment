@@ -28,8 +28,9 @@ Connect the Spark to the computer using USB, and run the following commands:
 
 ```
 docker pull brewblox/firmware-flasher:develop
-docker run --rm --privileged brewblox/firmware-flasher:develop prepare
-docker run --rm --privileged brewblox/firmware-flasher:develop flash
+docker run -it --rm --privileged brewblox/firmware-flasher:develop trigger-dfu
+docker run -it --rm --privileged brewblox/firmware-flasher:develop flash
+docker run -it --rm --privileged brewblox/firmware-flasher:develop flash-bootloader
 ```
 
 ### Raspberry Pi
@@ -38,8 +39,9 @@ Connect the Spark to the Raspberry Pi using USB, and run the following commands:
 
 ```
 docker pull brewblox/firmware-flasher:rpi-develop
-docker run --rm --privileged brewblox/firmware-flasher:rpi-develop prepare
-docker run --rm --privileged brewblox/firmware-flasher:rpi-develop flash
+docker run -it --rm --privileged brewblox/firmware-flasher:rpi-develop trigger-dfu
+docker run -it --rm --privileged brewblox/firmware-flasher:rpi-develop flash
+docker run -it --rm --privileged brewblox/firmware-flasher:rpi-develop flash-bootloader
 ```
 
 ## Services
