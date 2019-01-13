@@ -27,6 +27,9 @@ services:
     labels:
       - "traefik.port=5000"
       - "traefik.frontend.rule=PathPrefix: /history"
+    command: >
+      --write-interval=1
+      --poll-interval=1
 
   publisher:
     image: brewblox/brewblox-service:develop

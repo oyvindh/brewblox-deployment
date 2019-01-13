@@ -45,6 +45,7 @@ async def test_units(session, host):
     units = {
         'Temp': 'degC',
         'Time': 'second',
+        'LongTime': 'hour',
     }
     assert await response(session.put(host + '/spark/codec/units', json=units)) == units
     assert await response(session.put(host + '/sparktwo/codec/units', json=units)) == units
