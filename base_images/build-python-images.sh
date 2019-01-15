@@ -9,8 +9,7 @@ cp $(which qemu-arm-static) .
 
 python3 ./enable_experimental.py
 
-PYTHON_TAGS="3.6 3.6-slim 3.7 3.7-slim"
-NODE_TAGS="11 11-slim"
+PYTHON_TAGS="3.7 3.7-slim"
 
 for tag in ${PYTHON_TAGS}; do
     echo "
@@ -18,18 +17,9 @@ for tag in ${PYTHON_TAGS}; do
     COPY ./qemu-arm-static /usr/bin/qemu-arm-static
     " > ./Dockerfile
 
+    docker pull --platform=linux/arm arm32v7/python:${tag}
     docker build --platform=linux/arm --no-cache -t brewblox/rpi-python:${tag} .
     docker push brewblox/rpi-python:${tag}
-done
-
-for tag in ${NODE_TAGS}; do
-    echo "
-    FROM arm32v7/node:${tag}
-    COPY ./qemu-arm-static /usr/bin/qemu-arm-static
-    " > ./Dockerfile
-
-    docker build --platform=linux/arm --no-cache -t brewblox/rpi-node:${tag} .
-    docker push brewblox/rpi-node:${tag}
 done
 
 rm ./Dockerfile
