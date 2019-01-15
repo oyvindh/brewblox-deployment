@@ -23,7 +23,7 @@ do_script() {
         docker-compose pull
     fi
 
-    if [ $(prompt "Do you want to create default dashhboards?") = yes ]; then
+    if [ $(prompt "Do you want to create default dashboards?") = yes ]; then
         HOST=https://localhost/datastore
         DATABASES="services dashboards dashboard-items"
 
@@ -41,6 +41,7 @@ do_script() {
                 --header 'Accept: application/json' \
                 --data "@-" "${HOST}/${db}/_bulk_docs"
         done
+        docker-compose down
     fi
 
     echo "Done"
