@@ -44,6 +44,12 @@ docker run -it --rm --privileged brewblox/firmware-flasher:rpi-develop flash
 docker run -it --rm --privileged brewblox/firmware-flasher:rpi-develop flash-bootloader
 ```
 
+To setup wifi after flashing simply run the following command:
+
+```
+docker run -it --rm --privileged brewblox/firmware-flasher:rpi-develop wifi
+```
+
 ## Services
 
 ### Install
